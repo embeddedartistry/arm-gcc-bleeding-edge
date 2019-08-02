@@ -632,6 +632,8 @@ echo "${bold}********** Extract${normal}"
 cd ${sources}
 echo "${bold}---------- Extracting ${binutilsArchive}${normal}"
 tar -xf ${binutilsArchive}
+echo "${bold}---------- Extracting ${expatArchive}${normal}"
+tar -xf ${expatArchive}
 echo "${bold}---------- Extracting ${gccArchive}${normal}"
 tar -xf ${gccArchive}
 echo "${bold}---------- Extracting ${gdbArchive}${normal}"
