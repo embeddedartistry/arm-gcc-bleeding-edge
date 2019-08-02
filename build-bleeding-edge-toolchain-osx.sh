@@ -18,8 +18,6 @@ set -u
 # - Install homebrew?
 # - Why the hell is my terminal trying to print when I'm compiling?
 
-
-
 binutilsVersion="2.32"
 gccVersion="9.1.0"
 #gccVersionSuffix="-9.1"
@@ -41,6 +39,8 @@ sources="sources"
 
 binutils="binutils-${binutilsVersion}"
 binutilsArchive="${binutils}.tar.xz"
+expat="expat-${expatVersion}"
+expatArchive="${expat}.tar.bz2"
 gcc="gcc-${gccVersion}"
 gccArchive="${gcc}.tar.xz"
 gdb="gdb-${gdbVersion}"
@@ -237,6 +237,34 @@ buildIsl() {
 	if [ "${keepBuildFolders}" = "n" ]; then
 		echo "${bold}---------- ${bannerPrefix}${isl} remove build folder${normal}"
 		rm -rf ${buildFolder}/${isl}
+	fi
+	)
+}
+
+buildExpat() {
+	(
+	local buildFolder="${1}"
+	local bannerPrefix="${2}"
+	local configureOptions="${3}"
+	echo "${bold}********** ${bannerPrefix}${expat}${normal}"
+	mkdir -p ${buildFolder}/${expat}
+	cd ${buildFolder}/${expat}
+	export CPPFLAGS="${BASE_CPPFLAGS-} ${CPPFLAGS-}"
+	export LDFLAGS="${BASE_LDFLAGS-} ${LDFLAGS-}"
+	echo "${bold}---------- ${bannerPrefix}${expat} configure${normal}"
+	eval "${top}/${sources}/${expat}/configure \
+		${configureOptions} \
+		--prefix=${top}/${buildFolder}/${prerequisites}/${expat} \
+		--disable-shared \
+		--disable-nls"
+	echo "${bold}---------- ${bannerPrefix}${expat} make${normal}"
+	make -j$(nproc)
+	echo "${bold}---------- ${bannerPrefix}${expat} make install${normal}"
+	make install
+	cd ${top}
+	if [ "${keepBuildFolders}" = "n" ]; then
+		echo "${bold}---------- ${bannerPrefix}${expat} remove build folder${normal}"
+		rm -rf ${buildFolder}/${expat}
 	fi
 	)
 }
@@ -630,6 +658,8 @@ buildMpfr ${buildNative} "" "--build=${hostTriplet} --host=${hostTriplet}"
 buildMpc ${buildNative} "" "--build=${hostTriplet} --host=${hostTriplet}"
 
 buildIsl ${buildNative} "" "--build=${hostTriplet} --host=${hostTriplet}"
+
+buildExpat ${buildNative} "" "--build=${hostTriplet} --host=${hostTriplet}"
 
 buildBinutils ${buildNative} ${installNative} "" "--build=${hostTriplet} --host=${hostTriplet}" "${documentationTypes}"
 
