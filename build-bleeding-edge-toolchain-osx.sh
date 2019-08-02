@@ -587,6 +587,7 @@ mkdir -p ${installNative}
 mkdir -p ${sources}
 find ${sources} -mindepth 1 -maxdepth 1 -type d -exec rm -rf {} +
 find ${sources} -mindepth 1 -maxdepth 1 -type f ! -name "${binutilsArchive}" \
+	! -name "${expatArchive}" \
 	! -name "${gccArchive}" \
 	! -name "${gdbArchive}" \
 	! -name "${gmpArchive}" \
@@ -612,6 +613,7 @@ download() {
 }
 
 download ${binutilsArchive} http://ftp.gnu.org/gnu/binutils/${binutilsArchive}
+download ${expatArchive} https://github.com/libexpat/libexpat/releases/download/$(echo "R_${expatVersion}" | sed 's/\./_/g')/${expatArchive}
 if [ ${gccVersion#*-} = ${gccVersion} ]; then
 	download ${gccArchive} http://ftp.gnu.org/gnu/gcc/${gcc}/${gccArchive}
 else
