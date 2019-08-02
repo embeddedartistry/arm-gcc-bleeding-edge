@@ -19,6 +19,7 @@ set -u
 # - Why the hell is my terminal trying to print when I'm compiling?
 
 binutilsVersion="2.32"
+expatVersion="2.2.6"
 gccVersion="9.1.0"
 #gccVersionSuffix="-9.1"
 gdbVersion="8.2.1"
