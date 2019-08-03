@@ -561,7 +561,7 @@ postCleanup() {
 	cat > ${installFolder}/info.txt <<- EOF
 	${pkgversion}
 	build date: $(date +'%Y-%m-%d')
-	build system: $(uname -srvmo)
+	build system: $(uname -srvm)
 	host system: ${hostSystem}
 	target system: ${target}
 	compiler: ${CC-gcc} $(${CC-gcc} --version | grep -o '[0-9]\.[0-9]\.[0-9]')
@@ -708,7 +708,7 @@ buildGdb \
 	"--build=${hostTriplet} --host=${hostTriplet} --with-python=yes" \
 	"${documentationTypes}"
 
-postCleanup ${installNative} "" "$(uname -mo)" ""
+postCleanup ${installNative} "" "$(uname -ms)" ""
 find ${installNative} -type f -executable -exec strip {} \; || true
 find ${installNative} -type f -exec chmod a-w {} +
 if [ ${buildDocumentation} = "y" ]; then
@@ -719,7 +719,7 @@ echo "${bold}********** Package${normal}"
 rm -rf ${package}
 ln -s ${installNative} ${package}
 rm -rf ${packageArchiveNative}
-XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --mtime='@0' --numeric-owner --group=0 --owner=0 $(find ${package}/ -mindepth 1 -maxdepth 1)
+XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --numeric-owner --group=0 --owner=0 $(find ${package}/ -mindepth 1 -maxdepth 1)
 rm -rf ${package}
 
 echo "${bold}********** Done${normal}"
