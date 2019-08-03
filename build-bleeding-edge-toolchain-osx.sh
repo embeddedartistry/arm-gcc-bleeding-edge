@@ -709,7 +709,7 @@ buildGdb \
 	"${documentationTypes}"
 
 postCleanup ${installNative} "" "$(uname -ms)" ""
-find ${installNative} -type f -executable -exec strip {} \; || true
+find ${installNative} -type f -perm +0111 -exec strip {} \; || true
 find ${installNative} -type f -exec chmod a-w {} +
 if [ ${buildDocumentation} = "y" ]; then
 	find ${installNative}/share/doc -mindepth 2 -name '*.pdf' -exec mv {} ${installNative}/share/doc \;
@@ -719,7 +719,7 @@ echo "${bold}********** Package${normal}"
 rm -rf ${package}
 ln -s ${installNative} ${package}
 rm -rf ${packageArchiveNative}
-XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --numeric-owner --group=0 --owner=0 $(find ${package}/ -mindepth 1 -maxdepth 1)
+XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --numeric-owner $(find ${package}/ -mindepth 1 -maxdepth 1)
 rm -rf ${package}
 
 echo "${bold}********** Done${normal}"
