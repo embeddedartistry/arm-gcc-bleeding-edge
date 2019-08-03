@@ -113,7 +113,7 @@ buildZlib() {
 	echo "${bold}---------- ${bannerPrefix}${zlib} configure${normal}"
 	./configure --static --prefix=${top}/${buildFolder}/${prerequisites}/${zlib}
 	echo "${bold}---------- ${bannerPrefix}${zlib} make${normal}"
-	eval "make ${makeOptions} -jn"
+	eval "make ${makeOptions} -j$(nproc)"
 	echo "${bold}---------- ${bannerPrefix}${zlib} make install${normal}"
 	eval "make ${makeInstallOptions} install"
 	cd ${top}
@@ -143,7 +143,7 @@ buildGmp() {
 		--disable-shared \
 		--disable-nls"
 	echo "${bold}---------- ${bannerPrefix}${gmp} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${gmp} make install${normal}"
 	make install
 	cd ${top}
@@ -172,7 +172,7 @@ buildMpfr() {
 		--disable-nls \
 		--with-gmp=${top}/${buildFolder}/${prerequisites}/${gmp}"
 	echo "${bold}---------- ${bannerPrefix}${mpfr} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${mpfr} make install${normal}"
 	make install
 	cd ${top}
@@ -202,7 +202,7 @@ buildMpc() {
 		--with-gmp=${top}/${buildFolder}/${prerequisites}/${gmp} \
 		--with-mpfr=${top}/${buildFolder}/${prerequisites}/${mpfr}"
 	echo "${bold}---------- ${bannerPrefix}${mpc} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${mpc} make install${normal}"
 	make install
 	cd ${top}
@@ -231,7 +231,7 @@ buildIsl() {
 		--disable-nls \
 		--with-gmp-prefix=${top}/${buildFolder}/${prerequisites}/${gmp}"
 	echo "${bold}---------- ${bannerPrefix}${isl} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${isl} make install${normal}"
 	make install
 	cd ${top}
@@ -259,7 +259,7 @@ buildExpat() {
 		--disable-shared \
 		--disable-nls"
 	echo "${bold}---------- ${bannerPrefix}${expat} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${expat} make install${normal}"
 	make install
 	cd ${top}
@@ -295,7 +295,7 @@ buildBinutils() {
 		--with-system-zlib \
 		\"--with-pkgversion=${pkgversion}\""
 	echo "${bold}---------- ${bannerPrefix}${binutils} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${binutils} make install${normal}"
 	make install
 	for documentation in ${documentations}; do
@@ -353,7 +353,7 @@ buildGcc() {
 		\"--with-pkgversion=${pkgversion}\" \
 		--with-multilib-list=rmprofile"
 	echo "${bold}---------- ${bannerPrefix}${gcc} make all-gcc${normal}"
-	make -jn all-gcc
+	make -j$(nproc) all-gcc
 	echo "${bold}---------- ${bannerPrefix}${gcc} make install-gcc${normal}"
 	make install-gcc
 	cd ${top}
@@ -392,7 +392,7 @@ buildNewlib() {
 		--enable-newlib-global-stdio-streams \
 		--disable-nls"
 	echo "${bold}---------- ${newlib}${suffix} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${newlib}${suffix} make install${normal}"
 	make install
 	for documentation in ${documentations}; do
@@ -459,7 +459,7 @@ buildGccFinal() {
 		"--with-pkgversion=${pkgversion}" \
 		--with-multilib-list=rmprofile
 	echo "${bold}---------- ${gcc}${suffix} make${normal}"
-	make -jn INHIBIT_LIBC_CFLAGS="-DUSE_TM_CLONE_REGISTRY=0"
+	make -j$(nproc) INHIBIT_LIBC_CFLAGS="-DUSE_TM_CLONE_REGISTRY=0"
 	echo "${bold}---------- ${gcc}${suffix} make install${normal}"
 	make install
 	for documentation in ${documentations}; do
@@ -535,7 +535,7 @@ buildGdb() {
 		\"--with-gdb-datadir='\\\${prefix}'/${target}/share/gdb\" \
 		\"--with-pkgversion=${pkgversion}\""
 	echo "${bold}---------- ${bannerPrefix}${gdb} make${normal}"
-	make -jn
+	make -j$(nproc)
 	echo "${bold}---------- ${bannerPrefix}${gdb} make install${normal}"
 	make install
 	for documentation in ${documentations}; do
@@ -709,7 +709,7 @@ buildGdb \
 	"${documentationTypes}"
 
 postCleanup ${installNative} "" "$(uname -ms)" ""
-find ${installNative} -type f -perm +0111 -exec strip {} \; || true
+find ${installNative} -type f -executable -exec strip {} \; || true
 find ${installNative} -type f -exec chmod a-w {} +
 if [ ${buildDocumentation} = "y" ]; then
 	find ${installNative}/share/doc -mindepth 2 -name '*.pdf' -exec mv {} ${installNative}/share/doc \;
@@ -719,7 +719,7 @@ echo "${bold}********** Package${normal}"
 rm -rf ${package}
 ln -s ${installNative} ${package}
 rm -rf ${packageArchiveNative}
-XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --numeric-owner --owner=0 $(find ${package}/ -mindepth 1 -maxdepth 1)
+XZ_OPT=${XZ_OPT-"-9e -v"} tar -cJf ${packageArchiveNative} --numeric-owner --group=0 --owner=0 $(find ${package}/ -mindepth 1 -maxdepth 1)
 rm -rf ${package}
 
 echo "${bold}********** Done${normal}"
